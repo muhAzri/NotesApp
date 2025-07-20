@@ -1,4 +1,5 @@
 import type { Note } from '@/types';
+import { getInitialData } from './initialData';
 
 const STORAGE_KEY = 'notes-app-data';
 
@@ -7,14 +8,22 @@ export interface StoredData {
   lastUpdated: string;
 }
 
-export const loadNotesFromStorage = (): Note[] | null => {
+export const loadNotesFromStorage = (): Note[] => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) return null;
+    if (!stored) {
+      const initialData = getInitialData();
+      saveNotesToStorage(initialData);
+      return initialData;
+    }
     
     const data: StoredData = JSON.parse(stored);
     
-    if (!Array.isArray(data.notes)) return null;
+    if (!Array.isArray(data.notes)) {
+      const initialData = getInitialData();
+      saveNotesToStorage(initialData);
+      return initialData;
+    }
     
     const isValidNotes = data.notes.every((note: any) => 
       typeof note.id === 'number' &&
@@ -24,12 +33,18 @@ export const loadNotesFromStorage = (): Note[] | null => {
       typeof note.createdAt === 'string'
     );
     
-    if (!isValidNotes) return null;
+    if (!isValidNotes) {
+      const initialData = getInitialData();
+      saveNotesToStorage(initialData);
+      return initialData;
+    }
     
     return data.notes;
   } catch (error) {
     console.warn('Failed to load notes from localStorage:', error);
-    return null;
+    const initialData = getInitialData();
+    saveNotesToStorage(initialData);
+    return initialData;
   }
 };
 

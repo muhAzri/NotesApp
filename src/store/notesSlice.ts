@@ -4,7 +4,7 @@ import { loadNotesFromStorage, saveNotesToStorage } from '@/utils/localStorage';
 
 const loadInitialNotes = (): Note[] => {
   const storedNotes = loadNotesFromStorage();
-  return storedNotes || [];
+  return storedNotes;
 };
 
 const initialState: NotesState = {
